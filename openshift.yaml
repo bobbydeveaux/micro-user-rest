@@ -64,7 +64,25 @@ items:
     triggers:
     - generic:
         secret: RandomPassword123
-      type: Generic 
+      type: Generic
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: 'true'
+    labels:
+      app: micro-user-rest
+    name: micro-user-rest
+    namespace: fbac
+  spec:
+    host: micro-user-rest-fbac.51.179.219.187.nip.io
+    port:
+      targetPort: 8181-tcp
+    to:
+      kind: Service
+      name: micro-user-rest
+      weight: 100
+    wildcardPolicy: None
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -125,3 +143,25 @@ items:
             name: 'micro-user-rest:latest'
             namespace: fbac
         type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: micro-user-rest
+    name: micro-user-rest
+    namespace: fbac
+  spec:
+    ports:
+      - name: 8181-tcp
+        port: 8181
+        protocol: TCP
+        targetPort: 8181
+    selector:
+      app: micro-user-rest
+      deploymentconfig: micro-user-rest
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
