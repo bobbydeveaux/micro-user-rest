@@ -12,10 +12,11 @@ import (
 )
 
 type person struct {
-	Id    int64
-	Name  string
-	Valid bool
-	Jwt   string
+	Id          int64
+	Name        string
+	Valid       bool
+	Jwt         string
+	AccessToken string
 }
 
 func main() {
