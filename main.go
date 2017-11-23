@@ -80,7 +80,7 @@ func userLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Go type Request
 	var p person
-	err := ec.Request("user.login", me, &p, 100*time.Millisecond)
+	err := ec.Request("user.login", me, &p, 200*time.Millisecond)
 	if err != nil {
 		if nc.LastError() != nil {
 			log.Println("Error in Request: %v\n", nc.LastError())
