@@ -25,8 +25,7 @@ type accessToken struct {
 }
 
 type jwtToken struct {
-	Value  string
-	Expiry int
+	Value string
 }
 
 func main() {
