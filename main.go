@@ -19,6 +19,16 @@ type person struct {
 	AccessToken accessToken
 }
 
+type accessToken struct {
+	Value  string
+	Expiry int
+}
+
+type jwtToken struct {
+	Value  string
+	Expiry int
+}
+
 func main() {
 
 	router := mux.NewRouter()
