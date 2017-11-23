@@ -87,8 +87,8 @@ func userLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Println("Error in Request: %v\n", err)
 	} else {
-		log.Printf("Published [%s] : '%s'\n", "newuser", p.Name)
-		log.Printf("Received [%v] : '%s'\n", p.Id, p.Name)
+		log.Printf("Published [%s] : '%s'\n", "user.login", p.Name)
+		log.Printf("Received User [%v] : '%s'\n", p.Id, p.Name)
 	}
 
 	b, err := json.Marshal(p)
