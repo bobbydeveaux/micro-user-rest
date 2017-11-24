@@ -14,6 +14,8 @@ import (
 type person struct {
 	Id          int64
 	Name        string
+	Email       string
+	Password    string
 	Valid       bool
 	Jwt         string
 	AccessToken accessToken
@@ -38,7 +40,7 @@ func main() {
 	router := mux.NewRouter()
 	http.Handle("/", httpInterceptor(router))
 
-	//router.HandleFunc("/user", createUser).Methods("POST")
+	router.HandleFunc("/user", createUser).Methods("GET")
 	router.HandleFunc("/login", userLogin).Methods("GET")
 
 	http.ListenAndServe(":8181", nil)
@@ -102,6 +104,50 @@ func userLogin(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error in Request: %v\n", err)
 	} else {
 		log.Printf("Published [%s] : '%s'\n", "user.login", p.Name)
+		log.Printf("Received User [%v] : '%s'\n", p.Id, p.Name)
+	}
+
+	b, err := json.Marshal(p)
+	if err != nil {
+		log.Println("error:", err)
+	}
+
+	if b == nil {
+		b = []byte("{\"error\":\"timeout\"}")
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Write(b)
+}
+
+func createUser(w http.ResponseWriter, r *http.Request) {
+	//NATS_HOST = nats://localhost:4222
+	nc, _ := nats.Connect(os.Getenv("NATS_HOST"))
+	ec, _ := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
+	defer ec.Close()
+
+	name := r.URL.Query().Get("name")
+	password := r.URL.Query().Get("password")
+	email := r.URL.Query().Get("email")
+
+	//@TODO: Hash password using bcrypt
+
+	me := &person{
+		Name:     name,
+		Email:    email,
+		Password: password,
+	}
+
+	// Go type Request
+	var p person
+	err := ec.Request("user.createuser", me, &p, 1000*time.Millisecond)
+	if err != nil {
+		if nc.LastError() != nil {
+			log.Println("Error in Request: %v\n", nc.LastError())
+		}
+		log.Println("Error in Request: %v\n", err)
+	} else {
+		log.Printf("Published [%s] : '%s'\n", "user.createuser", p.Name)
 		log.Printf("Received User [%v] : '%s'\n", p.Id, p.Name)
 	}
 
